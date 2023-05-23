@@ -53,6 +53,6 @@ For Wifi and further network setup. Create a file called `include/jni_config.h` 
 # Usage
 * Turn on the MCU power switch and battery pack.
 * Wait for the Wifi connection (OLED shows IP address).
-* Check for an AlIVE message on MQTT broker on topic `jniHome/services/jniProtoCar/alive`.
+* Check for an Alive message (every 5 seconds) on MQTT broker on topic `jniHome/services/jniProtoCar/alive`.
 * Turn on the controller unit and hit the PS button to connect to control unit.
 * Once the Bluetooth connection is established the UDP connection state between control unit and base changes to 'OK' (operational).
