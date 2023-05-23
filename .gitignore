@@ -4,3 +4,4 @@
 .vscode/launch.json
 .vscode/ipch
 include/jni_config.h
+.DS_Store

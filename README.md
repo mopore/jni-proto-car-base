@@ -26,6 +26,23 @@ A project for to control JNI Proto Car with a PS3 controller can be found
 * MQTT connectivity (Currently only Alive tick w/ IP address)
 
 
+## Impressions
+### Overview
+![Overview](documentation/1_overview.jpeg)
+
+### Display and Sensors
+![Display and Distance Sensor](documentation/2_display_and_distance.jpeg)
+
+### Front
+![Front](documentation/3_front_focus.jpeg)
+
+### Back
+![Back](documentation/4_back_focus.jpeg)
+
+### Underside
+![Underside](documentation/5_underside.jpeg)
+
+
 # Pre-requisites
 * Fully setup platformIO environment
 * An ESP32-S3 Microcontroller
