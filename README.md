@@ -3,6 +3,8 @@ JNI Proto Car Base
 This is the firmware project to control the base microcontroller of the JNI Proto Car.
 This project rewrites the original CircuitPython code to C++ and uses the Arduino framework.
 
+![jni-proto-car](https://github.com/mopore/jni-proto-car-base/assets/56848419/d10ecb75-ea2b-41bf-a912-2ea0723eac0f)
+
 A project for to control JNI Proto Car with a PS3 controller can be found 
 [here](https://github.com/mopore/jni-proto-car-control).
 
