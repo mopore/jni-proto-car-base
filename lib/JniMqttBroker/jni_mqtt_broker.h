@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>  // knolleary/PubSubClient@^2.8
+#include <ArduinoJson.h>  // bblanchon/ArduinoJson@^6.21.2
 #include "jni_shared_types.h"
 
 
@@ -9,6 +10,8 @@
 #define TOPIC_SERVICE_PREFIX "jniHome/services/jniProtoCar"
 #define TOPIC_ALIVE TOPIC_SERVICE_PREFIX "/alive"
 #define TOPIC_INPUT TOPIC_SERVICE_PREFIX "/input"
+#define TOPIC_SENSORS "jniHome/objects/jniProtoCar/events/sensors"
+
 #define SEND_ALIVE_SECONDS 5
 
 
@@ -25,6 +28,8 @@ class JniMqttBroker {
 	 	bool _reconnect();
 		void _checkReconnect();
 		void _handleMessage(char* topic, byte* payload, unsigned int length);
+		void _ensureAliveTick();
+		void _sendSensorData();
 		uint8_t _aliveCounter = 0;
 
 		WiFiClient _espClient;

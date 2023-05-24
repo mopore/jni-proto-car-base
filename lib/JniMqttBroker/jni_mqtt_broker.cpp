@@ -77,16 +77,55 @@ void JniMqttBroker::_checkReconnect() {
 void JniMqttBroker::loop1Hz() {
 	if (_client.connected()) {
 		_client.loop();
-
-		if (_aliveCounter == SEND_ALIVE_SECONDS){
-			auto connectedIp = getWifiStatusIP_v4();
-			_client.publish(TOPIC_ALIVE, connectedIp);
-			_aliveCounter = 0;
-		} else {
-			_aliveCounter++;
-		}
-
+		_ensureAliveTick();
+		_sendSensorData();
 	} else {
 		_checkReconnect();
 	}
+}
+
+
+void JniMqttBroker::_ensureAliveTick() {
+	if (_aliveCounter == SEND_ALIVE_SECONDS){
+		auto connectedIp = getWifiStatusIP_v4();
+		_client.publish(TOPIC_ALIVE, connectedIp);
+		_aliveCounter = 0;
+	} else {
+		_aliveCounter++;
+	}
+}
+
+
+void JniMqttBroker::_sendSensorData() {
+	char jsonOutput[360];  // Input and output size calculated with:
+	// https://arduinojson.org/v6/assistant/
+	/*
+	Example output:
+		{
+		"temperatureCelsius": 32.69317245,
+		"accelX": 0.239420176,
+		"accelY": -1.541865945,
+		"accelZ": -9.959878922,
+		"gyroX": 0.014899152,
+		"gyroY": 0.00212845,
+		"gyroZ": 0,
+		"frontDistance": 765
+		}
+	*/    
+	StaticJsonDocument<128> doc;  // To be created on the stack
+
+    doc["temperatureCelsius"] = carSensors.temperatureCelsius;
+
+    doc["accelX"] = carSensors.accelX;
+    doc["accelY"] = carSensors.accelY;
+	doc["accelZ"] = carSensors.accelZ;
+    
+	doc["gyroX"] = carSensors.gyroX;
+	doc["gyroY"] = carSensors.gyroY;
+	doc["gyroZ"] = carSensors.gyroZ;
+
+	doc["frontDistance"] = carSensors.frontDistance;
+
+	serializeJson(doc, jsonOutput);
+	_client.publish(TOPIC_SENSORS, jsonOutput);
 }
