@@ -20,10 +20,28 @@ A project for to control JNI Proto Car with a PS3 controller can be found
 ## Sensors and Connectivity
 * Unexpected Maker Feather S3 Microcontroller (ESP32-S3) (https://unexpectedmaker.com/shop/feathers3)
 * Distance sensor (VL53L4CX) for obstacle detection on the front.
-* Accelerometer and Gyro sensor (ICM20649) for acceleration and tilt detection.
+* Accelerometer and Gyro sensor (ICM20649) for acceleration and tilt detection reading at 10Hz.
 * OLED 128x64 display for debugging and status information.
 * Direct Steering via UDP socker over Wifi at 100Hz
 * MQTT connectivity (Currently only Alive tick w/ IP address)
+
+### MQTT Data and Topics
+Alive tick on topic `jniHome/services/jniProtoCar/alive` with IP address as payload every 5 seconds.
+
+Sensor data on topic `jniHome/objects/jniProtoCar/events/sensors` publishing at 1Hz.
+Example output:
+```json
+		{
+		"temperatureCelsius": 32.69317245,
+		"accelX": 0.239420176,
+		"accelY": -1.541865945,
+		"accelZ": -9.959878922,
+		"gyroX": 0.014899152,
+		"gyroY": 0.00212845,
+		"gyroZ": 0,
+		"frontDistance": 765
+		}
+```
 
 
 ## Impressions
