@@ -39,7 +39,8 @@ Example output:
 		"gyroX": 0.014899152,
 		"gyroY": 0.00212845,
 		"gyroZ": 0,
-		"frontDistance": 765
+		"frontDistance": 765,
+		"batVoltUnplug": 4.2
 		}
 ```
 
@@ -60,6 +61,8 @@ Example output:
 ### Underside
 ![Underside](documentation/5_underside.jpeg)
 
+### Sensor Data Visualitzation
+![Grafana Data Visualization](documentation/6_grafana.png)
 
 # Pre-requisites
 * Fully setup platformIO environment

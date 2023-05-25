@@ -97,22 +97,25 @@ void JniMqttBroker::_ensureAliveTick() {
 
 
 void JniMqttBroker::_sendSensorData() {
-	char jsonOutput[360];  // Input and output size calculated with:
+	char jsonOutput[440];  // Input and output size calculated with:
+	// char jsonOutput[360];  // Input and output size calculated with:
 	// https://arduinojson.org/v6/assistant/
 	/*
 	Example output:
 		{
-		"temperatureCelsius": 32.69317245,
-		"accelX": 0.239420176,
-		"accelY": -1.541865945,
-		"accelZ": -9.959878922,
-		"gyroX": 0.014899152,
-		"gyroY": 0.00212845,
-		"gyroZ": 0,
-		"frontDistance": 765
+		"temperatureCelsius": 32.245678901234567890123456789,
+		"accelX": -2.7182818284590452353602874713527,
+		"accelY": -2.7182818284590452353602874713527,
+		"accelZ": -2.7182818284590452353602874713527,
+		"gyroX": -2.7182818284590452353602874713527,
+		"gyroY": -2.7182818284590452353602874713527,
+		"gyroZ": -2.7182818284590452353602874713527,
+		"frontDistance": 7650,
+		"batteryVoltageUnplugged": 3.2425678901234567890123456789
 		}
 	*/    
-	StaticJsonDocument<128> doc;  // To be created on the stack
+	StaticJsonDocument<192> doc;  // To be created on the stack
+	// StaticJsonDocument<128> doc;  // To be created on the stack
 
     doc["temperatureCelsius"] = carSensors.temperatureCelsius;
 
@@ -126,6 +129,10 @@ void JniMqttBroker::_sendSensorData() {
 
 	doc["frontDistance"] = carSensors.frontDistance;
 
+	bool carIsNotCharging = !powerStatus.usbPowerPresent;
+	if (carIsNotCharging) {
+		doc["batVoltUnplug"] = powerStatus.batteryVoltage;
+	} 
 	serializeJson(doc, jsonOutput);
 	_client.publish(TOPIC_SENSORS, jsonOutput);
 }
