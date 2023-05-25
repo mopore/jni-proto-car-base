@@ -1,5 +1,18 @@
 #include "jni_engine_control.h"
 
+// Drive assistance features
+#define FRONT_COLLISION_DETECTION 1
+#define STEERING_WITHOUT_DRIVE 1
+#define STEERING_FRICTION 1
+
+
+// Driving assistance values
+#define SECURE_DISTANCE 200
+#define MIN_DRIVE_INPUT 5
+#define MAX_STEERING_PER_LOOP 10
+
+
+// Engine calibrations
 #define THURST_MIN 0
 #define THURST_MAX 180
 
@@ -12,13 +25,10 @@
 #define RIGHT_REVERSE true
 
 #define STEERING_PIN 6
-#define STEERING_CENTER 96
+#define STEERING_CENTER 97  // The higher the value the more to the right
 #define STEERING_MIN (STEERING_CENTER - 25)
 #define STEERING_MAX (STEERING_CENTER + 25)
 #define STEERING_REVERESE true
-
-#define SECURE_DISTANCE 200
-#define MIN_DRIVE_INPUT 5
 
 JniEngineControl JniEngineControl::s_instance;
 
@@ -39,18 +49,22 @@ JniEngineControl::JniEngineControl() :
 void JniEngineControl::loop10Hz() {
 	auto driveInput = carInput.y;
 	auto steeringInput = carInput.x;
-	
-	// Front collision detection
+
+	// Front collision detection	
+	#if FRONT_COLLISION_DETECTION == 1
 	bool collisionDanger = carInput.y > MIN_DRIVE_INPUT && 
 		carSensors.frontDistance < SECURE_DISTANCE;
 	if (collisionDanger) {
 		driveInput = 0;
 	}
+	#endif
 	
 	// Avoid steering without drive
+	#if STEERING_WITHOUT_DRIVE == 1
 	if (abs(driveInput) < MIN_DRIVE_INPUT) {
 		steeringInput = 0;
 	}
+	#endif
 
 	m_leftDrive.controlDrive(driveInput, m_pwm);
 	m_rightDrive.controlDrive(driveInput, m_pwm);
@@ -97,7 +111,6 @@ JniDriveControl::JniDriveControl(uint8_t pin, int16_t phys_min, int16_t phys_sto
 
 
 void JniDriveControl::controlDrive(int16_t val_100_based, Pwm& pwm) const {
-	// TODO Place to adapt value for physical limits
 	int16_t phys_value = m_translation.translate(val_100_based);
 	pwm.writeServo(m_pin, phys_value);
 }
@@ -109,8 +122,34 @@ JniSteeringControl::JniSteeringControl(uint8_t pin, int16_t phys_min, int16_t ph
 }
 
 
-void JniSteeringControl::controlSteering(int16_t val_100_based, Pwm& pwm) const {
-	// TODO Place to adapt value for physical limits
-	int16_t phys_value = m_translation.translate(val_100_based);
+void JniSteeringControl::controlSteering(int16_t new_val_100_based, Pwm& pwm) {
+
+	// Use steering friction
+	#if STEERING_FRICTION == 1	
+	int16_t diffWanted = new_val_100_based - _lastValue;
+	bool steerToRightWanted = diffWanted > 0;
+	bool steerToLeftWanted = diffWanted < 0;
+	bool inputNeedsReduction = abs(diffWanted) > MAX_STEERING_PER_LOOP;
+
+	if (inputNeedsReduction) {
+		if (steerToRightWanted) {
+			new_val_100_based = _lastValue + MAX_STEERING_PER_LOOP;
+			if (new_val_100_based > 100) {
+				new_val_100_based = 100;
+			}
+		}  
+		if (steerToLeftWanted) { // Steer to left wanted
+			new_val_100_based = _lastValue - MAX_STEERING_PER_LOOP;
+			if (new_val_100_based < -100) {
+				new_val_100_based = -100;
+			}
+		}
+	}
+	#endif
+
+	// Physical adaption
+	int16_t phys_value = m_translation.translate(new_val_100_based);
 	pwm.writeServo(m_pin, phys_value);
+
+	_lastValue = new_val_100_based;
 }

@@ -30,10 +30,11 @@ class JniDriveControl {
 class JniSteeringControl {
 	public:
 		JniSteeringControl(uint8_t pin, int16_t phys_min, int16_t phys_stop, int16_t phys_max, bool reversed);
-		void controlSteering(int16_t val_100_based, Pwm& pwm) const;
+		void controlSteering(int16_t val_100_based, Pwm& pwm);
 	private:
 		uint8_t m_pin;
 		JniPhysicalTranslation m_translation;
+		int16_t _lastValue = 0;
 };
 
 

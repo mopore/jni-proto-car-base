@@ -47,10 +47,13 @@ Example output:
 ## Drive Assistance Features
 
 ### Collission Avoidance
-* The forward movement is cut off if the front distance is lower than 20cm.
+The forward movement is cut off if the front distance is lower than 20cm.
 
 ### Steering Axis Protection
 Any steering is cut off if no drive to the motors is requested.
+
+### Steering Friction
+Reduces to rapid steering input.
 
 ## Impressions
 ### Overview
