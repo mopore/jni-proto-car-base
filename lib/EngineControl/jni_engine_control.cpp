@@ -16,7 +16,9 @@
 #define STEERING_MIN (STEERING_CENTER - 25)
 #define STEERING_MAX (STEERING_CENTER + 25)
 #define STEERING_REVERESE true
+
 #define SECURE_DISTANCE 200
+#define MIN_DRIVE_INPUT 5
 
 JniEngineControl JniEngineControl::s_instance;
 
@@ -36,15 +38,22 @@ JniEngineControl::JniEngineControl() :
 
 void JniEngineControl::loop10Hz() {
 	auto driveInput = carInput.y;
-	bool collisionDanger = carInput.y > 5 && 
+	auto steeringInput = carInput.x;
+	
+	// Front collision detection
+	bool collisionDanger = carInput.y > MIN_DRIVE_INPUT && 
 		carSensors.frontDistance < SECURE_DISTANCE;
 	if (collisionDanger) {
 		driveInput = 0;
 	}
+	
+	// Avoid steering without drive
+	if (abs(driveInput) < MIN_DRIVE_INPUT) {
+		steeringInput = 0;
+	}
+
 	m_leftDrive.controlDrive(driveInput, m_pwm);
 	m_rightDrive.controlDrive(driveInput, m_pwm);
-
-	auto steeringInput = carInput.x;
 	m_steering.controlSteering(steeringInput, m_pwm);
 }
 
