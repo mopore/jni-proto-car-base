@@ -44,6 +44,11 @@ Example output:
 		}
 ```
 
+## Drive Assistance Features
+
+### Collission Avoidance
+* The engine will cut off any forward movement if the front distance is lower than 20cm.
+
 
 ## Impressions
 ### Overview
